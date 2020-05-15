@@ -1,10 +1,9 @@
 import pygame
-import neat
-import time
-import os
 import random
 
 from const import *
+
+pygame.font.init()
 
 
 class Bird:
@@ -91,16 +90,109 @@ class Bird:
         return pygame.mask.from_surface(self.img)
 
 
-def draw_window(win, bird):
-    win.blit(BG_IMAGE,  (0, 0))
+class Pipe:
+    """"
+    Class that represents pipe object
+    """
+    __GAP__ = 20
+    __VELOCITY__ = 5
+
+    def __init__(self, x):
+        self.x = x
+        self.height = 0
+        self.top = 0
+
+        self.bottom = 0
+
+        self.pipe_top = pygame.transform.flip(PIPE_IMAGE, False, True)
+        self.pip_bottom = PIPE_IMAGE
+
+        self.passed = False  # collision
+        self.set_height()
+
+    def set_height(self):
+        self.height = random.randrange(50, 450)
+        self.top = self.height - self.pipe_top.get_height()
+        self.bottom = self.height + self.__GAP__
+
+    def move(self):
+        self.x -= self.__VELOCITY__
+
+    def draw(self, win):
+        win.blit(self.pipe_top, (self.x, self.top))
+        win.blit(self.pip_bottom, (self.x, self.bottom))
+
+    def collision(self, bird):
+        """"
+
+        """
+        bird_mask = bird.get_mask()
+        top_mask = pygame.mask.from_surface(self.pipe_top)
+        bottom_mask = pygame.mask.from_surface(self.pip_bottom)
+        top_offset = (self.x - bird.x, self.top - round(bird.y))
+        bottom_offset = (self.x - bird.x, self.bottom - round(bird.y))
+
+        b_point = bird_mask.overlap(bottom_mask, bottom_offset)
+        t_point = bird_mask.overlap(top_mask, top_offset)
+
+        if b_point or t_point:
+            return True
+
+        return False
+
+
+class Base:
+    """"
+    Class that represents ground
+    """
+    __VELOCITY__ = 5
+    __WIDTH__ = BASE_IMAGE.get_width()
+    __IMG__ = BASE_IMAGE
+
+    def __init__(self, y):
+        self.y = y
+        self.x1 = 0
+        self.x2 = self.__WIDTH__
+
+    def move(self):
+        """"
+        """
+        self.x1 -= self.__VELOCITY__
+        self.x2 -= self.__VELOCITY__
+
+        if self.x1 + self.__WIDTH__ < 0:
+            self.x1 = self.x2 + self.__WIDTH__
+
+        if self.x2 + self.__WIDTH__ < 0:
+            self.x2 = self.x1 + self.__WIDTH__
+
+    def draw(self, win):
+        """"
+
+        """
+        win.blit(self.__IMG__, (self.x1, self.y))
+        win.blit(self.__IMG__, (self.x2, self.y))
+
+
+def draw_window(win, bird, pipes, base, score):
+    win.blit(BG_IMAGE, (0, 0))
+
+    for pipe in pipes:
+        pipe.draw(win)
+    text = STAT_FONT.render(f"Score: {str(score)}", 1, (255, 255, 255))
+    win.blit(text, (WIN_WIDTH - 10 - text.get_width(), 10))
+    base.draw(win)
+
     bird.draw(win)
     pygame.display.update()
 
 
 def main():
-    bird = Bird(200, 200)
+    bird = Bird(230, 350)
+    base = Base(730)
+    pipes = [Pipe(700)]
     win = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
-
+    score = 0
     clock = pygame.time.Clock()
 
     run = True
@@ -109,11 +201,38 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
-        bird.move()
-        draw_window(win, bird)
+
+        rem = []
+        # bird.move()
+        add_pipe = False
+        for pipe in pipes:
+            if pipe.collision(bird):
+                pass
+
+            if pipe.x + pipe.pipe_top.get_width() < 0:
+                rem.append(pipe)
+
+            if not pipe.passed and pipe.x < bird.x:
+                pipe.passed = True
+                add_pipe = True
+
+            pipe.move()
+
+        if add_pipe:
+            score += 1
+            pipes.append(Pipe(700))
+
+        for r in rem:
+            pipes.remove(r)
+
+        if bird.y + bird.img.get_height() > 730:
+            pass
+
+        base.move()
+        draw_window(win, bird, pipes, base, score)
 
     pygame.quit()
     quit()
 
-main()
 
+main()

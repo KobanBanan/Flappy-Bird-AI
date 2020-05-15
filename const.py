@@ -5,6 +5,8 @@ Module contains contant variables for project
 import pygame
 import os
 
+pygame.font.init()
+
 WIN_WIDTH = 500
 WIN_HEIGHT = 800
 
@@ -14,3 +16,5 @@ BIRDS_ITEMS = [pygame.transform.scale2x(pygame.image.load(os.path.join("imgs", i
 PIPE_IMAGE = pygame.transform.scale2x(pygame.image.load(os.path.join("imgs", "pipe.png")))
 BASE_IMAGE = pygame.transform.scale2x(pygame.image.load(os.path.join("imgs", "base.png")))
 BG_IMAGE = pygame.transform.scale2x(pygame.image.load(os.path.join("imgs", "bg.png")))
+
+STAT_FONT = pygame.font.SysFont("comicsans", 50)
