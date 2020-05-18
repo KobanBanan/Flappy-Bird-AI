@@ -7,9 +7,9 @@ import os
 
 pygame.font.init()
 
-WIN_WIDTH = 500
-WIN_HEIGHT = 800
-
+WIN_WIDTH: int = 500
+WIN_HEIGHT: int = 800
+GEN: int = 0
 bird_list = ["bird1.png", "bird2.png", "bird3.png"]
 
 BIRDS_ITEMS = [pygame.transform.scale2x(pygame.image.load(os.path.join("imgs", item))) for item in bird_list]
