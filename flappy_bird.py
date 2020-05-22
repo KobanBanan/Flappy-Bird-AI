@@ -1,7 +1,8 @@
-import random
-import neat
 from const import *
 from typing import NoReturn, List, Tuple
+import random
+import neat
+import pickle
 
 
 class Bird:
@@ -340,11 +341,13 @@ def run(file: str) -> NoReturn:
     create_best_bird(winner)
 
 
-def create_best_bird(winner: neat.genome.DefaultGenome):
+def create_best_bird(winner: neat.genome.DefaultGenome) -> NoReturn:
     """"
     :param winner - best bird in population
     """
-    pass
+    # Save the winner.
+    with open('winner-ctrnn', 'wb') as f:
+        pickle.dump(winner, f)
 
 
 if __name__ == '__main__':

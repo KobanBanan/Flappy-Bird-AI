@@ -18,3 +18,4 @@ BASE_IMAGE = pygame.transform.scale2x(pygame.image.load(os.path.join("imgs", "ba
 BG_IMAGE = pygame.transform.scale2x(pygame.image.load(os.path.join("imgs", "bg.png")))
 
 STAT_FONT = pygame.font.SysFont("comicsans", 50)
+
